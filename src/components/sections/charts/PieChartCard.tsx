@@ -31,7 +31,7 @@ const PieChartCard = ({ income = 0, expense = 0 }) => {
                 `${name}: ${((percent ?? 0) * 100).toFixed(0)}%`
               }
             >
-              {pieData.map((entry, index) => (
+              {pieData.map((_, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index]} />
               ))}
             </Pie>
