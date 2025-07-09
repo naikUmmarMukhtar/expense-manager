@@ -4,7 +4,6 @@ import { getFromFirebase } from "../api/firebaseAPI";
 import PieChartCard from "../components/sections/charts/PieChartCard";
 import NoData from "../components/shared/NoData";
 import Loader from "../components/shared/Loader";
-import { useNavigate } from "react-router-dom";
 import type { IncomeExpenseType } from "../types";
 import ModalForm from "../components/shared/ModalForm";
 
@@ -31,6 +30,7 @@ function Home() {
           date: value.date,
           amount: parseFloat(value.amount),
           description: value.description,
+          selectedCategory: value.selectedCategory,
         })
       );
 
@@ -41,6 +41,7 @@ function Home() {
           date: value.date,
           amount: parseFloat(value.amount),
           description: value.description,
+          selectedCategory: value.selectedCategory,
         })
       );
 

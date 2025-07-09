@@ -6,13 +6,13 @@ import {
   putToFirebase,
 } from "../api/firebaseAPI";
 import NoData from "../components/shared/NoData";
-import type { IncomeExpenseType } from "../types";
+import type { CategoryProps, IncomeExpenseType } from "../types";
 import Loader from "../components/shared/Loader";
 import CategoryModal from "../components/shared/CategoryModal";
 import CategoriesTable from "../components/shared/categories-table/CategoriesTable";
 
 function TransactionList() {
-  const [categoriesList, setCategoriesList] = useState<IncomeExpenseType[]>([]);
+  const [categoriesList, setCategoriesList] = useState<CategoryProps[]>([]);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [editingRow, setEditingRow] = useState<IncomeExpenseType | null>(null);
   const [deletingRow, setDeletingRow] = useState(null);
@@ -23,6 +23,7 @@ function TransactionList() {
   }, []);
 
   const fetchData = async () => {
+    setLoading(true);
     try {
       const data = await getFromFirebase("categories");
 
@@ -54,7 +55,7 @@ function TransactionList() {
     try {
       await deleteFromFirebase(`categories/${row.id}`);
       setDeletingRow(null);
-      const updatedList = transactionList.filter((item) => item.id !== row.id);
+      const updatedList = categoriesList.filter((item) => item.id !== row.id);
       setCategoriesList(updatedList);
     } catch (err) {}
   };
@@ -71,9 +72,9 @@ function TransactionList() {
   //     await fetchData();
   //   } catch (err) {}
   // };
-  // if (loading) {
-  //   return <Loader />;
-  // }
+  if (loading) {
+    return <Loader />;
+  }
   const handleAdd = async (data: any) => {
     try {
       await postToFirebase(`categories/`, {

@@ -57,3 +57,10 @@ export interface DateCellProps {
   className?: string;
   formatOptions?: Intl.DateTimeFormatOptions;
 }
+
+export interface CategoryProps {
+  id: string;
+  type: string;
+  category: string;
+  date: string;
+}
