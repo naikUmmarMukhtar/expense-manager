@@ -1,14 +1,5 @@
 import { NavLink } from "react-router-dom";
-import {
-  ArrowLeftRight,
-  ChartNoAxesGanttIcon,
-  Home,
-  LayoutGrid,
-  List,
-  TrendingDown,
-  TrendingUp,
-  Wallet,
-} from "lucide-react";
+import { ArrowLeftRight, Home, LayoutGrid } from "lucide-react";
 import { getLinkClasses } from "../../utils/getLinkClasses";
 
 const Sidebar = () => {
