@@ -1,6 +1,7 @@
 import { useState } from "react";
+import type { CategoryModalProps } from "../../types";
 
-function CategoryModal({ isOpen, onClose, onSave }) {
+function CategoryModal({ isOpen, onClose, onSave }: CategoryModalProps) {
   const [category, setCategory] = useState("");
   const [type, setType] = useState("");
 

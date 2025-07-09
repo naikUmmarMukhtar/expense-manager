@@ -108,7 +108,6 @@ function Home() {
           title="No Transactions Yet"
           buttonLabel="Add Transaction"
           onAddTransaction={() => setModalOpen(true)}
-          title="Welcome to Expense Tracker"
           description="You haven’t added any transactions yet. Go to the Income or Expense tab to start tracking."
         />
       )}
@@ -117,7 +116,6 @@ function Home() {
         <ModalForm
           isOpen={true}
           onClose={() => setModalOpen(false)}
-          // onSubmit={handleAdd}
           type="Income"
         />
       )}

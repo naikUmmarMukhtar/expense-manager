@@ -11,10 +11,11 @@ export interface TableProps {
   showTotal?: boolean;
 }
 export interface ModalFormProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit: (data: any) => void;
-  type: string;
+  isOpen?: boolean;
+  onClose?: () => void;
+  onSubmit?: (data: any) => void;
+  categoriesList?: { id: string; category: string; type: string }[];
+  type?: string;
   initialData?: {
     description?: string;
     amount?: number | string;
@@ -63,4 +64,9 @@ export interface CategoryProps {
   type: string;
   category: string;
   date: string;
+}
+export interface CategoryModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (data: { category: string; type: string }) => void;
 }

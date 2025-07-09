@@ -37,9 +37,13 @@ const ModalForm: React.FC<ModalFormProps> = ({
       selectedCategory,
     };
 
-    onSubmit(data);
+    if (onSubmit) {
+      onSubmit(data);
+    }
     setFormData({ description: "", amount: "" });
-    onClose();
+    if (onClose) {
+      onClose();
+    }
   };
 
   if (!isOpen) return null;
@@ -90,7 +94,7 @@ const ModalForm: React.FC<ModalFormProps> = ({
               name="category"
               value={selectedCategory?.id || ""}
               onChange={(e) => {
-                const selected = categoriesList.find(
+                const selected = categoriesList?.find(
                   (cat) => cat.id === e.target.value
                 );
                 setSelectedCategory(selected || null);
@@ -99,7 +103,7 @@ const ModalForm: React.FC<ModalFormProps> = ({
               required
             >
               <option value="">Select category</option>
-              {categoriesList.map((category) => (
+              {categoriesList?.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.category}
                 </option>
