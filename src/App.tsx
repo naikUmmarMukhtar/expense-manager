@@ -4,6 +4,7 @@ import IncomeList from "./pages/IncomeList";
 import ExpenseList from "./pages/ExpenseList";
 import Sidebar from "./components/sections/Sidebar";
 import Transaction from "./pages/TransactionList";
+import Categories from "./pages/Categories";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
             <Route path="/incomes" element={<IncomeList />} />
             <Route path="/expenses" element={<ExpenseList />} />
             <Route path="/transactions" element={<Transaction />} />
+            <Route path="/categories" element={<Categories />} />
           </Routes>
         </div>
       </div>

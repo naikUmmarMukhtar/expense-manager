@@ -7,32 +7,48 @@ const TableRow: React.FC<TableRowProps> = ({
   showActions,
   onEditClick,
   onDeleteClick,
-}) => (
-  <tr>
-    <td className="px-4 py-3 border border-gray-200 whitespace-nowrap">
-      <DateCell date={row.date} />
-    </td>
-    <td className="px-4 py-3 border border-gray-200">{row.description}</td>
-    <td className="px-4 py-3 border border-gray-200 capitalize">{row.type}</td>
-    <td className="px-4 py-3 border border-gray-200 font-medium text-right text-gray-700">
-      ₹{row.amount}
-    </td>
-    {showActions && (
-      <td className="px-4 py-3 border border-gray-200 text-right whitespace-nowrap">
-        <button
-          onClick={onEditClick}
-          className="inline-flex items-center text-gray-700 hover:underline mr-4"
-        >
-          <Pencil className="w-4 h-4" />
-        </button>
-        <button
-          onClick={onDeleteClick}
-          className="inline-flex items-center text-gray-700 hover:underline"
-        >
-          <Trash2 className="w-4 h-4 mr-1 text-red-600" />
-        </button>
+}) => {
+  console.log(row, "row in TableRow");
+
+  return (
+    <tr>
+      <td className="px-4 py-3 border border-gray-200 whitespace-nowrap">
+        <DateCell date={row.date} />
       </td>
-    )}
-  </tr>
-);
+      <td className="px-4 py-3 border border-gray-200">{row.description}</td>
+      <td
+        className={`px-4 py-3 border border-gray-200 capitalize  font-medium ${
+          row.selectedCategory.type === "incomes"
+            ? "bg-green-100 text-green-700"
+            : row.selectedCategory.type === "expenses"
+            ? "bg-red-100 text-red-700"
+            : "bg-gray-100 text-gray-700"
+        }`}
+      >
+        {row.selectedCategory.category}
+      </td>
+
+      <td className="px-4 py-3 border border-gray-200 font-medium text-right text-gray-700">
+        ₹{row.amount}
+      </td>
+      {showActions && (
+        <td className="px-4 py-3 border border-gray-200 text-right whitespace-nowrap">
+          <button
+            onClick={onEditClick}
+            className="inline-flex items-center text-gray-700 hover:underline mr-4"
+          >
+            <Pencil className="w-4 h-4" />
+          </button>
+          <button
+            onClick={onDeleteClick}
+            className="inline-flex items-center text-gray-700 hover:underline"
+          >
+            <Trash2 className="w-4 h-4 mr-1 text-red-600" />
+          </button>
+        </td>
+      )}
+    </tr>
+  );
+};
+
 export default TableRow;

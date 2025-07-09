@@ -1,5 +1,14 @@
 import { NavLink } from "react-router-dom";
-import { ArrowLeftRight, Home, List, Wallet } from "lucide-react";
+import {
+  ArrowLeftRight,
+  ChartNoAxesGanttIcon,
+  Home,
+  LayoutGrid,
+  List,
+  TrendingDown,
+  TrendingUp,
+  Wallet,
+} from "lucide-react";
 import { getLinkClasses } from "../../utils/getLinkClasses";
 
 const Sidebar = () => {
@@ -17,14 +26,14 @@ const Sidebar = () => {
           className={({ isActive }) => getLinkClasses({ isActive })}
         >
           <Home size={18} />
-          <span>Home</span>
+          <span>Dashboard</span>
         </NavLink>
 
-        <NavLink
+        {/* <NavLink
           to="/incomes"
           className={({ isActive }) => getLinkClasses({ isActive })}
         >
-          <List size={18} />
+          <TrendingUp size={18} />
           <span>Income List</span>
         </NavLink>
 
@@ -32,9 +41,9 @@ const Sidebar = () => {
           to="/expenses"
           className={({ isActive }) => getLinkClasses({ isActive })}
         >
-          <Wallet size={18} />
+          <TrendingDown size={18} />
           <span>Expense List</span>
-        </NavLink>
+        </NavLink> */}
 
         <NavLink
           to="/transactions"
@@ -42,6 +51,13 @@ const Sidebar = () => {
         >
           <ArrowLeftRight size={18} />
           <span>Transactions</span>
+        </NavLink>
+        <NavLink
+          to="/categories"
+          className={({ isActive }) => getLinkClasses({ isActive })}
+        >
+          <LayoutGrid size={18} />
+          <span>Categories</span>
         </NavLink>
       </nav>
     </aside>

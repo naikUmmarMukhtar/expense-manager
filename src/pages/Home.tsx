@@ -6,6 +6,7 @@ import NoData from "../components/shared/NoData";
 import Loader from "../components/shared/Loader";
 import { useNavigate } from "react-router-dom";
 import type { IncomeExpenseType } from "../types";
+import ModalForm from "../components/shared/ModalForm";
 
 function Home() {
   const [transactionList, setTransactionList] = useState<IncomeExpenseType[]>(
@@ -14,7 +15,7 @@ function Home() {
   const [incomeTotal, setIncomeTotal] = useState(0);
   const [expenseTotal, setExpenseTotal] = useState(0);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const [isModalOpen, setModalOpen] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
@@ -103,10 +104,20 @@ function Home() {
         <NoData
           showIncomeAction={true}
           showExpenseAction={true}
-          onAddIncome={() => navigate("/incomes")}
-          onAddExpense={() => navigate("/expenses")}
+          title="No Transactions Yet"
+          buttonLabel="Add Transaction"
+          onAddTransaction={() => setModalOpen(true)}
           title="Welcome to Expense Tracker"
           description="You haven’t added any transactions yet. Go to the Income or Expense tab to start tracking."
+        />
+      )}
+
+      {isModalOpen && (
+        <ModalForm
+          isOpen={true}
+          onClose={() => setModalOpen(false)}
+          // onSubmit={handleAdd}
+          type="Income"
         />
       )}
     </>

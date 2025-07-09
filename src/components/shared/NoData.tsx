@@ -1,13 +1,12 @@
-import { FolderPlus, PlusCircle, MinusCircle } from "lucide-react";
+import { FolderPlus, PlusCircle } from "lucide-react";
 import type { NoDataProps } from "../../types";
 
 export default function NoData({
   title = "Nothing Here Yet",
   description = "Start by adding your first entry. It’ll show up here once created.",
-  onAddIncome,
-  onAddExpense,
+  onAddTransaction,
+  buttonLabel,
   showIncomeAction,
-  showExpenseAction,
 }: NoDataProps) {
   return (
     <div className="flex items-center justify-center h-full w-full px-4">
@@ -21,20 +20,11 @@ export default function NoData({
         <div className="flex gap-6 mt-4 text-sm font-medium">
           {showIncomeAction && (
             <div
-              onClick={onAddIncome}
+              onClick={onAddTransaction}
               className="flex items-center gap-1 text-emerald-600 cursor-pointer hover:underline transition"
             >
               <PlusCircle className="h-4 w-4" />
-              <span>Add Income</span>
-            </div>
-          )}
-          {showExpenseAction && (
-            <div
-              onClick={onAddExpense}
-              className="flex items-center gap-1 text-rose-600 cursor-pointer hover:underline transition"
-            >
-              <MinusCircle className="h-4 w-4" />
-              <span>Add Expense</span>
+              <span>{buttonLabel}</span>
             </div>
           )}
         </div>

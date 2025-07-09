@@ -4,6 +4,7 @@ import ModalForm from "../components/shared/ModalForm";
 import {
   deleteFromFirebase,
   getFromFirebase,
+  postToFirebase,
   putToFirebase,
 } from "../api/firebaseAPI";
 import NoData from "../components/shared/NoData";
@@ -18,10 +19,12 @@ function TransactionList() {
   const [editingRow, setEditingRow] = useState<IncomeExpenseType | null>(null);
   const [deletingRow, setDeletingRow] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [categoriesList, setCategoriesList] = useState<any[]>([]);
 
   useEffect(() => {
     fetchData();
+    fetchCategories();
   }, []);
 
   const fetchData = async () => {
@@ -37,6 +40,7 @@ function TransactionList() {
           date: new Date(value.date).toLocaleDateString(),
           amount: value.amount,
           description: value.description,
+          selectedCategory: value.selectedCategory,
         })
       );
 
@@ -47,6 +51,7 @@ function TransactionList() {
           date: new Date(value.date).toLocaleDateString(),
           description: value.description,
           amount: value.amount,
+          selectedCategory: value.selectedCategory,
         })
       );
 
@@ -56,6 +61,25 @@ function TransactionList() {
       setLoading(false);
     } catch (error) {
       setLoading(false);
+    }
+  };
+
+  console.log(transactionList, "transactionList");
+
+  const fetchCategories = async () => {
+    try {
+      const data = await getFromFirebase("categories");
+      const categories = Object.entries(data || {}).map(
+        ([key, value]: any) => ({
+          id: key,
+          type: value.type,
+          category: value.category,
+          date: new Date(value.date).toLocaleDateString(),
+        })
+      );
+      setCategoriesList(categories);
+    } catch (error) {
+      return [];
     }
   };
 
@@ -87,6 +111,22 @@ function TransactionList() {
       await fetchData();
     } catch (err) {}
   };
+
+  const handleAdd = async (data: any) => {
+    console.log(data, "data in handleAdd");
+
+    try {
+      const { description, amount, selectedCategory } = data;
+      await postToFirebase(`${data.selectedCategory.type}/`, {
+        description,
+        amount,
+        selectedCategory,
+        date: Date.now(),
+      });
+      setModalOpen(false);
+      await fetchData();
+    } catch (err) {}
+  };
   if (loading) {
     return <Loader />;
   }
@@ -98,9 +138,9 @@ function TransactionList() {
           <NoData
             showIncomeAction={true}
             showExpenseAction={true}
-            onAddIncome={() => navigate("/incomes")}
-            onAddExpense={() => navigate("/expenses")}
+            onAddTransaction={() => setModalOpen(true)}
             title="No Transactions Yet"
+            buttonLabel="Add Transaction"
             description="You haven’t added any income or expenses. Visit the Income or Expense section to create a transaction."
           />
         </div>
@@ -108,10 +148,21 @@ function TransactionList() {
         <Table
           data={transactionList}
           showActionsColumn={true}
-          showActionButton={false}
+          showActionButton={true}
+          actionButtonLabel="Add Transaction"
           showTotal={false}
           onEditButtonClick={(row) => setEditingRow(row)}
           onDeleteButtonClick={(row) => setDeletingRow(row)}
+          onActionButtonClick={() => setModalOpen(true)}
+        />
+      )}
+
+      {isModalOpen && (
+        <ModalForm
+          isOpen={true}
+          onClose={() => setModalOpen(false)}
+          onSubmit={handleAdd}
+          categoriesList={categoriesList}
         />
       )}
 

@@ -40,8 +40,10 @@ export interface NoDataProps {
   description?: string;
   onAddIncome?: () => void;
   onAddExpense?: () => void;
+  onAddTransaction?: () => void;
   showIncomeAction?: boolean;
   showExpenseAction?: boolean;
+  buttonLabel?: string;
 }
 export type IncomeExpenseType = {
   id: string;

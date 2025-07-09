@@ -5,10 +5,13 @@ const ModalForm: React.FC<ModalFormProps> = ({
   isOpen,
   onClose,
   onSubmit,
-  type,
   initialData,
+  categoriesList,
 }) => {
   const [formData, setFormData] = useState({ description: "", amount: "" });
+  const [selectedCategory, setSelectedCategory] = useState<any>(null);
+
+  console.log(categoriesList, "categoriesList in ModalForm");
 
   useEffect(() => {
     if (initialData) {
@@ -25,16 +28,14 @@ const ModalForm: React.FC<ModalFormProps> = ({
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-  console.log(initialData, "before ...");
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = {
       ...initialData,
       ...formData,
-      type,
+      selectedCategory,
     };
-    console.log(initialData, "after ...");
 
     onSubmit(data);
     setFormData({ description: "", amount: "" });
@@ -47,7 +48,7 @@ const ModalForm: React.FC<ModalFormProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6">
         <h2 className="text-xl font-semibold text-gray-800 mb-4">
-          {initialData ? "Edit Income" : `Add ${type}`}
+          {initialData ? "Edit Income" : `Add ${"Income"}`}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -83,14 +84,27 @@ const ModalForm: React.FC<ModalFormProps> = ({
 
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">
-              Type
+              Category
             </label>
-            <input
-              type="text"
-              value={type}
-              disabled
-              className="w-full rounded-lg border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-500 cursor-not-allowed"
-            />
+            <select
+              name="category"
+              value={selectedCategory?.id || ""}
+              onChange={(e) => {
+                const selected = categoriesList.find(
+                  (cat) => cat.id === e.target.value
+                );
+                setSelectedCategory(selected || null);
+              }}
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="">Select category</option>
+              {categoriesList.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.category}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="flex justify-end space-x-3 pt-4">
