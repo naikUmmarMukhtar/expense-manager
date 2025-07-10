@@ -70,8 +70,11 @@ function CategoryModal({
               onChange={handleChange}
               name="type"
               required
+              disabled={initialData}
             >
-              <option value="">Select type</option>
+              <option disabled value="">
+                Select type
+              </option>
               <option value="incomes">Income</option>
               <option value="expenses">Expense</option>
             </select>

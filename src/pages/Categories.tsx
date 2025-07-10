@@ -10,6 +10,7 @@ import type { CategoryProps, IncomeExpenseType } from "../types";
 import Loader from "../components/shared/Loader";
 import CategoryModal from "../components/shared/CategoryModal";
 import CategoriesTable from "../components/shared/categories-table/CategoriesTable";
+import { clearDeletedCategoryFromTransactions } from "../components/helpers/clearDeletedCategoryFromTransactions";
 
 function TransactionList() {
   const [categoriesList, setCategoriesList] = useState<CategoryProps[]>([]);
@@ -32,7 +33,7 @@ function TransactionList() {
           id: key,
           type: value.type,
           category: value.category,
-          date: new Date(value.date).toLocaleDateString(),
+          date: value.date,
         })
       );
 
@@ -49,48 +50,10 @@ function TransactionList() {
     }
   }, [deletingRow]);
 
-  const updateTransaction = async (deletedCategoryId: string) => {
-    try {
-      const data = await getFromFirebase("");
-
-      const updates: Promise<void>[] = [];
-
-      const processEntries = (type: "incomes" | "expenses") => {
-        const entries = data?.[type] || {};
-
-        Object.entries(entries).forEach(([key, value]: any) => {
-          if (value?.selectedCategory?.id === deletedCategoryId) {
-            const updatedCategory = {
-              ...value.selectedCategory,
-              category: "",
-            };
-
-            updates.push(
-              putToFirebase(`${type}/${key}`, {
-                ...value,
-                selectedCategory: updatedCategory,
-              })
-            );
-          }
-        });
-      };
-
-      processEntries("incomes");
-      processEntries("expenses");
-
-      await Promise.all(updates);
-    } catch (err) {
-      console.error(
-        "Error updating transactions after category deletion:",
-        err
-      );
-    }
-  };
-
   const handleDelete = async (row: CategoryProps) => {
     try {
       await deleteFromFirebase(`categories/${row.id}`);
-      await updateTransaction(row.id);
+      await clearDeletedCategoryFromTransactions(row.id);
 
       const updatedList = categoriesList.filter((item) => item.id !== row.id);
       setCategoriesList(updatedList);

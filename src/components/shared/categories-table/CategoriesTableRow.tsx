@@ -27,9 +27,9 @@ const CategoriesTableRow: React.FC<TableRowProps> = ({
         {row.category}
       </td>
 
-      {/* <td className="px-4 py-3 border border-gray-200 capitalize">
+      <td className="px-4 py-3 border border-gray-200 capitalize">
         {row.type}
-      </td> */}
+      </td>
 
       {showActions && (
         <td className="px-4 py-3 border border-gray-200 text-right whitespace-nowrap">

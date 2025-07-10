@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Table from "../components/shared/table/Table";
-import { getFromFirebase } from "../api/firebaseAPI";
+import { getFromFirebase, postToFirebase } from "../api/firebaseAPI";
 import PieChartCard from "../components/sections/charts/PieChartCard";
 import NoData from "../components/shared/NoData";
 import Loader from "../components/shared/Loader";
@@ -16,57 +16,112 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setModalOpen] = useState(false);
 
+  const [categoriesList, setCategoriesList] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [categoriesList]);
+
+  const fetchCategories = async () => {
+    try {
+      const data = await getFromFirebase("categories");
+      const categories = Object.entries(data || {}).map(
+        ([key, value]: any) => ({
+          id: key,
+          type: value.type,
+          category: value.category,
+          date: value.date,
+        })
+      );
+      setCategoriesList(categories);
+    } catch (error) {
+      console.error("Error fetching categories", error);
+    }
+  };
+
   const fetchData = async () => {
-    setLoading(true);
     try {
       const data = await getFromFirebase("");
       const expenses = data.expenses || {};
       const incomes = data.incomes || {};
 
-      const expenseEntries = Object.entries(expenses).map(
-        ([key, value]: any) => ({
-          id: key,
-          type: "Expense",
-          date: value.date,
-          amount: parseFloat(value.amount),
-          description: value.description,
-          selectedCategory: value.selectedCategory,
-        })
-      );
+      console.log(data, "Fetched data from Firebase");
 
-      const incomeEntries = Object.entries(incomes).map(
-        ([key, value]: any) => ({
-          id: key,
-          type: "Income",
-          date: value.date,
-          amount: parseFloat(value.amount),
-          description: value.description,
-          selectedCategory: value.selectedCategory,
-        })
-      );
+      const resolveCategory = (id: string) => {
+        return categoriesList.find((cat) => cat.id === id);
+      };
 
-      const all = expenseEntries.concat(incomeEntries).reverse();
+      const mapEntries = (entries: any, type: "incomes" | "expenses") =>
+        Object.entries(entries).map(([key, value]: any) => {
+          const cat = resolveCategory(value.selectedCategory?.id);
+          return {
+            id: key,
+            type,
+            date: new Date(value.date).toLocaleDateString(),
+            amount: value.amount,
+            description: value.description,
+            selectedCategory: cat
+              ? { ...cat }
+              : {
+                  id: value.selectedCategory?.id || "",
+                  category: "Unknown",
+                  type: "",
+                  date: "",
+                },
+          };
+        });
+
+      const all = [
+        ...mapEntries(expenses, "expenses"),
+        ...mapEntries(incomes, "incomes"),
+      ].reverse();
+
+      // const totalIncome = incomeEntries.reduce(
+      //   (sum, item) => sum + item.amount,
+      //   0
+      // );
+      // const totalExpense = expenseEntries.reduce(
+      //   (sum, item) => sum + item.amount,
+      //   0
+      // );
+      // setIncomeTotal(totalIncome);
+      // setExpenseTotal(totalExpense);
+
       setTransactionList(all);
-
-      const totalIncome = incomeEntries.reduce(
-        (sum, item) => sum + item.amount,
-        0
-      );
-      const totalExpense = expenseEntries.reduce(
-        (sum, item) => sum + item.amount,
-        0
-      );
-
-      setIncomeTotal(totalIncome);
-      setExpenseTotal(totalExpense);
-    } catch (err) {}
-    setLoading(false);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching transactions", error);
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     fetchData();
   }, []);
+  const handleAdd = async (data: any) => {
+    try {
+      const category = categoriesList.find(
+        (cat) => cat.id === data.selectedCategory.id
+      );
+      if (!category) throw new Error("Category not found");
 
+      await postToFirebase(`${category.type}/`, {
+        description: data.description,
+        amount: data.amount,
+        selectedCategory: category,
+        date: Date.now(),
+      });
+
+      setModalOpen(false);
+      await fetchData();
+    } catch (err) {
+      console.error("Add error", err);
+    }
+  };
   if (loading) {
     return <Loader />;
   }
@@ -117,6 +172,8 @@ function Home() {
           isOpen={true}
           onClose={() => setModalOpen(false)}
           type="Income"
+          onSubmit={handleAdd}
+          categoriesList={categoriesList}
         />
       )}
     </>
