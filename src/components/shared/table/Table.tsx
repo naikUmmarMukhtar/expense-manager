@@ -17,6 +17,7 @@ const Table: React.FC<TableProps> = ({
   const netBalance = (incomeTotal ?? 0) - (expenseTotal ?? 0);
   const totalTransactions = data?.length || 0;
   const totalTransactionAmount = (incomeTotal ?? 0) + (expenseTotal ?? 0);
+  console.log(data, "data in Table");
 
   return (
     <div

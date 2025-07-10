@@ -25,7 +25,7 @@ const TableRow: React.FC<TableRowProps> = ({
             : "bg-gray-100 text-gray-800"
         }`}
       >
-        {row.selectedCategory.category}
+        {row.selectedCategory.category || " Unknown"}
       </td>
 
       <td className="px-4 py-3 border border-gray-200 font-medium text-right text-gray-700">

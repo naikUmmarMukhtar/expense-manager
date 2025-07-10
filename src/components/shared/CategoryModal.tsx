@@ -1,13 +1,30 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { CategoryModalProps } from "../../types";
 
-function CategoryModal({ isOpen, onClose, onSave }: CategoryModalProps) {
-  const [category, setCategory] = useState("");
+function CategoryModal({
+  isOpen,
+  onClose,
+  onSave,
+  initialData,
+}: CategoryModalProps) {
+  const [category, setCategory] = useState({ category: "", type: "" });
   const [type, setType] = useState("");
+
+  useEffect(() => {
+    if (initialData) {
+      setCategory(initialData.category || "");
+      setType(initialData.type || "");
+    }
+  }, [initialData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({ category, type });
+    onSave({
+      ...initialData,
+      category: category,
+      type: type,
+      date: new Date(),
+    });
     onClose();
   };
 

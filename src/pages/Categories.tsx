@@ -27,8 +27,6 @@ function TransactionList() {
     try {
       const data = await getFromFirebase("categories");
 
-      // console.log(data, " fetched categories data");
-
       const categories = Object.entries(data || {}).map(
         ([key, value]: any) => ({
           id: key,
@@ -51,30 +49,72 @@ function TransactionList() {
     }
   }, [deletingRow]);
 
-  const handleDelete = async (row: IncomeExpenseType) => {
+  const updateTransaction = async (deletedCategoryId: string) => {
     try {
-      await deleteFromFirebase(`categories/${row.id}`);
-      setDeletingRow(null);
-      const updatedList = categoriesList.filter((item) => item.id !== row.id);
-      setCategoriesList(updatedList);
-    } catch (err) {}
+      const data = await getFromFirebase("");
+
+      const updates: Promise<void>[] = [];
+
+      const processEntries = (type: "incomes" | "expenses") => {
+        const entries = data?.[type] || {};
+
+        Object.entries(entries).forEach(([key, value]: any) => {
+          if (value?.selectedCategory?.id === deletedCategoryId) {
+            const updatedCategory = {
+              ...value.selectedCategory,
+              category: "",
+            };
+
+            updates.push(
+              putToFirebase(`${type}/${key}`, {
+                ...value,
+                selectedCategory: updatedCategory,
+              })
+            );
+          }
+        });
+      };
+
+      processEntries("incomes");
+      processEntries("expenses");
+
+      await Promise.all(updates);
+    } catch (err) {
+      console.error(
+        "Error updating transactions after category deletion:",
+        err
+      );
+    }
   };
 
-  // const handleEdit = async (updatedData: any) => {
-  //   try {
-  //     const { id, category, type } = updatedData;
-  //     await putToFirebase(`categories/${id}`, {
-  //       category,
-  //       type,
-  //       date: Date.now(),
-  //     });
-  //     setEditingRow(null);
-  //     await fetchData();
-  //   } catch (err) {}
-  // };
-  if (loading) {
-    return <Loader />;
-  }
+  const handleDelete = async (row: CategoryProps) => {
+    try {
+      await deleteFromFirebase(`categories/${row.id}`);
+      await updateTransaction(row.id);
+
+      const updatedList = categoriesList.filter((item) => item.id !== row.id);
+      setCategoriesList(updatedList);
+      setDeletingRow(null);
+    } catch (err) {
+      console.error("Error deleting category:", err);
+    }
+  };
+
+  const handleEdit = async (updatedData: any) => {
+    try {
+      const { id, category, type } = updatedData;
+      await putToFirebase(`categories/${id}`, {
+        category,
+        type,
+        date: Date.now(),
+      });
+      setEditingRow(null);
+      await fetchData();
+    } catch (err) {
+      console.error("Error updating category:", err);
+    }
+  };
+
   const handleAdd = async (data: any) => {
     try {
       await postToFirebase(`categories/`, {
@@ -84,12 +124,18 @@ function TransactionList() {
       });
       setShowCategoryModal(false);
       fetchData();
-    } catch (err) {}
+    } catch (err) {
+      console.error("Error adding category:", err);
+    }
   };
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <>
-      {categoriesList.length == 0 ? (
+      {categoriesList.length === 0 ? (
         <div className="h-full p-6">
           <NoData
             showIncomeAction={true}
@@ -118,6 +164,15 @@ function TransactionList() {
           isOpen={true}
           onClose={() => setShowCategoryModal(false)}
           onSave={handleAdd}
+        />
+      )}
+
+      {editingRow && (
+        <CategoryModal
+          isOpen={true}
+          onClose={() => setEditingRow(null)}
+          onSave={handleEdit}
+          initialData={editingRow}
         />
       )}
     </>

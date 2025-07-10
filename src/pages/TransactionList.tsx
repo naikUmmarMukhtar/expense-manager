@@ -8,63 +8,28 @@ import {
   putToFirebase,
 } from "../api/firebaseAPI";
 import NoData from "../components/shared/NoData";
-import { useNavigate } from "react-router-dom";
-import type { IncomeExpenseType } from "../types";
 import Loader from "../components/shared/Loader";
+import type { IncomeExpenseType } from "../types";
 
 function TransactionList() {
   const [transactionList, setTransactionList] = useState<IncomeExpenseType[]>(
     []
   );
   const [editingRow, setEditingRow] = useState<IncomeExpenseType | null>(null);
-  const [deletingRow, setDeletingRow] = useState(null);
+  const [deletingRow, setDeletingRow] = useState<IncomeExpenseType | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setModalOpen] = useState(false);
   const [categoriesList, setCategoriesList] = useState<any[]>([]);
 
   useEffect(() => {
-    fetchData();
     fetchCategories();
   }, []);
 
-  const fetchData = async () => {
-    try {
-      const data = await getFromFirebase("");
-      const expenses = data.expenses || {};
-      const incomes = data.incomes || {};
-
-      const expenseEntries = Object.entries(expenses).map(
-        ([key, value]: any) => ({
-          id: key,
-          type: "expenses",
-          date: new Date(value.date).toLocaleDateString(),
-          amount: value.amount,
-          description: value.description,
-          selectedCategory: value.selectedCategory,
-        })
-      );
-
-      const incomeEntries = Object.entries(incomes).map(
-        ([key, value]: any) => ({
-          id: key,
-          type: "incomes",
-          date: new Date(value.date).toLocaleDateString(),
-          description: value.description,
-          amount: value.amount,
-          selectedCategory: value.selectedCategory,
-        })
-      );
-
-      const all = expenseEntries.concat(incomeEntries).reverse();
-
-      setTransactionList(all);
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-    }
-  };
-
-  console.log(transactionList, "transactionList");
+  useEffect(() => {
+    fetchData();
+  }, [categoriesList]);
 
   const fetchCategories = async () => {
     try {
@@ -74,12 +39,57 @@ function TransactionList() {
           id: key,
           type: value.type,
           category: value.category,
-          date: new Date(value.date).toLocaleDateString(),
+          date: value.date,
         })
       );
       setCategoriesList(categories);
     } catch (error) {
-      return [];
+      console.error("Error fetching categories", error);
+    }
+  };
+
+  const fetchData = async () => {
+    try {
+      const data = await getFromFirebase("");
+      const expenses = data.expenses || {};
+      const incomes = data.incomes || {};
+
+      console.log(data, "Fetched data from Firebase");
+
+      const resolveCategory = (id: string) => {
+        return categoriesList.find((cat) => cat.id === id);
+      };
+
+      const mapEntries = (entries: any, type: "incomes" | "expenses") =>
+        Object.entries(entries).map(([key, value]: any) => {
+          const cat = resolveCategory(value.selectedCategory?.id);
+          return {
+            id: key,
+            type,
+            date: new Date(value.date).toLocaleDateString(),
+            amount: value.amount,
+            description: value.description,
+            selectedCategory: cat
+              ? { ...cat }
+              : {
+                  id: value.selectedCategory?.id || "",
+                  category: "Unknown",
+                  type: "",
+                  date: "",
+                },
+          };
+        });
+
+      const all = [
+        ...mapEntries(expenses, "expenses"),
+        ...mapEntries(incomes, "incomes"),
+      ].reverse();
+
+      setTransactionList(all);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching transactions", error);
+      setLoading(false);
     }
   };
 
@@ -92,41 +102,58 @@ function TransactionList() {
   const handleDelete = async (row: IncomeExpenseType) => {
     try {
       await deleteFromFirebase(`${row.type}/${row.id}`);
+      setTransactionList((prev) => prev.filter((item) => item.id !== row.id));
+    } catch (err) {
+      console.error("Delete error", err);
+    } finally {
       setDeletingRow(null);
-      const updatedList = transactionList.filter((item) => item.id !== row.id);
-      setTransactionList(updatedList);
-    } catch (err) {}
+    }
   };
 
   const handleEdit = async (updatedData: any) => {
     try {
-      const { id, description, amount, type } = updatedData;
+      const { id, description, amount, selectedCategory, type } = updatedData;
+      const category = categoriesList.find(
+        (cat) => cat.id === selectedCategory.id
+      );
+      if (!category) throw new Error("Category not found");
+
       await putToFirebase(`${type}/${id}`, {
         description,
         amount,
-        type,
+        selectedCategory: category,
         date: Date.now(),
+        type,
       });
+
       setEditingRow(null);
       await fetchData();
-    } catch (err) {}
+    } catch (err) {
+      console.error("Edit error", err);
+    }
   };
 
   const handleAdd = async (data: any) => {
-    console.log(data, "data in handleAdd");
-
     try {
-      const { description, amount, selectedCategory } = data;
-      await postToFirebase(`${data.selectedCategory.type}/`, {
-        description,
-        amount,
-        selectedCategory,
+      const category = categoriesList.find(
+        (cat) => cat.id === data.selectedCategory.id
+      );
+      if (!category) throw new Error("Category not found");
+
+      await postToFirebase(`${category.type}/`, {
+        description: data.description,
+        amount: data.amount,
+        selectedCategory: category,
         date: Date.now(),
       });
+
       setModalOpen(false);
       await fetchData();
-    } catch (err) {}
+    } catch (err) {
+      console.error("Add error", err);
+    }
   };
+
   if (loading) {
     return <Loader />;
   }
@@ -173,6 +200,7 @@ function TransactionList() {
           onSubmit={handleEdit}
           type={editingRow.type}
           initialData={editingRow}
+          categoriesList={categoriesList}
         />
       )}
     </>
