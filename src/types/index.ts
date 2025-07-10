@@ -69,4 +69,15 @@ export interface CategoryModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (data: { category: string; type: string }) => void;
+  initialData?: {
+    category?: string;
+    type?: string;
+    date?: Date | string;
+  };
 }
+
+export type CategoryState = {
+  category: string;
+  type: string;
+  date?: Date | undefined;
+};

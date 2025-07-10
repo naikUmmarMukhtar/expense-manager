@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { CategoryModalProps } from "../../types";
+import type { CategoryModalProps, CategoryState } from "../../types";
 
 function CategoryModal({
   isOpen,
@@ -7,7 +7,10 @@ function CategoryModal({
   onSave,
   initialData,
 }: CategoryModalProps) {
-  const [category, setCategory] = useState({ category: "", type: "" });
+  const [category, setCategory] = useState<CategoryState>({
+    category: "",
+    type: "",
+  });
 
   useEffect(() => {
     if (initialData) {
@@ -20,7 +23,9 @@ function CategoryModal({
     }
   }, [initialData]);
 
-  const handleChange = (e) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setCategory((prev) => ({ ...prev, [name]: value }));
   };
@@ -52,6 +57,7 @@ function CategoryModal({
               className="w-full border border-gray-300 rounded-xl p-2 text-gray-800"
               value={category.category}
               onChange={handleChange}
+              name="category"
               placeholder="Enter category Name"
               required
             />
@@ -62,6 +68,7 @@ function CategoryModal({
               className="w-full border border-gray-300 rounded-xl p-2 text-gray-800"
               value={category.type}
               onChange={handleChange}
+              name="type"
               required
             >
               <option value="">Select type</option>
