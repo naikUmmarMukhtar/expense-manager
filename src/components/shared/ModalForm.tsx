@@ -11,14 +11,16 @@ const ModalForm: React.FC<ModalFormProps> = ({
   const [formData, setFormData] = useState({ description: "", amount: "" });
   const [selectedCategory, setSelectedCategory] = useState<any>(null);
 
-  console.log(categoriesList, "categoriesList in ModalForm");
-
   useEffect(() => {
     if (initialData) {
       setFormData({
         description: initialData.description || "",
         amount: initialData.amount?.toString() || "",
       });
+      const category = categoriesList?.find(
+        (cat) => cat.id === initialData.selectedCategory?.id
+      );
+      setSelectedCategory(category || null);
     } else {
       setFormData({ description: "", amount: "" });
     }

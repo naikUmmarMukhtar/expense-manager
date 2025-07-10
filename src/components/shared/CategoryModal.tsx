@@ -8,23 +8,32 @@ function CategoryModal({
   initialData,
 }: CategoryModalProps) {
   const [category, setCategory] = useState({ category: "", type: "" });
-  const [type, setType] = useState("");
 
   useEffect(() => {
     if (initialData) {
-      setCategory(initialData.category || "");
-      setType(initialData.type || "");
+      setCategory({
+        category: initialData.category || "",
+        type: initialData.type || "",
+      });
+    } else {
+      setCategory({ category: "", type: "" });
     }
   }, [initialData]);
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setCategory((prev) => ({ ...prev, [name]: value }));
+  };
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({
-      ...initialData,
-      category: category,
-      type: type,
-      date: new Date(),
-    });
+    if (onSave) {
+      onSave({
+        ...initialData,
+        ...category,
+        date: new Date(),
+      });
+      setCategory({ category: "", type: "" });
+    }
     onClose();
   };
 
@@ -41,8 +50,9 @@ function CategoryModal({
             <label className="block text-sm text-gray-700 mb-1">Category</label>
             <input
               className="w-full border border-gray-300 rounded-xl p-2 text-gray-800"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              value={category.category}
+              onChange={handleChange}
+              placeholder="Enter category Name"
               required
             />
           </div>
@@ -50,8 +60,8 @@ function CategoryModal({
             <label className="block text-sm text-gray-700 mb-1">Type</label>
             <select
               className="w-full border border-gray-300 rounded-xl p-2 text-gray-800"
-              value={type}
-              onChange={(e) => setType(e.target.value)}
+              value={category.type}
+              onChange={handleChange}
               required
             >
               <option value="">Select type</option>
