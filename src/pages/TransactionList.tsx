@@ -10,88 +10,19 @@ import {
 import NoData from "../components/shared/NoData";
 import Loader from "../components/shared/Loader";
 import type { IncomeExpenseType } from "../types";
+import { useCategories } from "../hooks/useCategories";
+import { useTransactions } from "../hooks/useTransactions";
 
 function TransactionList() {
-  const [transactionList, setTransactionList] = useState<IncomeExpenseType[]>(
-    []
-  );
   const [editingRow, setEditingRow] = useState<IncomeExpenseType | null>(null);
   const [deletingRow, setDeletingRow] = useState<IncomeExpenseType | null>(
     null
   );
-  const [loading, setLoading] = useState(true);
   const [isModalOpen, setModalOpen] = useState(false);
-  const [categoriesList, setCategoriesList] = useState<any[]>([]);
+  const { categoriesList, loadingCategories } = useCategories();
 
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  useEffect(() => {
-    fetchData();
-  }, [categoriesList]);
-
-  const fetchCategories = async () => {
-    try {
-      const data = await getFromFirebase("categories");
-      const categories = Object.entries(data || {}).map(
-        ([key, value]: any) => ({
-          id: key,
-          type: value.type,
-          category: value.category,
-          date: value.date,
-        })
-      );
-      setCategoriesList(categories);
-    } catch (error) {
-      console.error("Error fetching categories", error);
-    }
-  };
-
-  const fetchData = async () => {
-    try {
-      const data = await getFromFirebase("");
-      const expenses = data.expenses || {};
-      const incomes = data.incomes || {};
-
-      console.log(data, "Fetched data from Firebase");
-
-      const resolveCategory = (id: string) => {
-        return categoriesList.find((cat) => cat.id === id);
-      };
-
-      const mapEntries = (entries: any, type: "incomes" | "expenses") =>
-        Object.entries(entries).map(([key, value]: any) => {
-          const cat = resolveCategory(value.selectedCategory?.id);
-          return {
-            id: key,
-            type,
-            date: new Date(value.date).toLocaleDateString(),
-            amount: value.amount,
-            description: value.description,
-            selectedCategory: cat
-              ? { ...cat }
-              : {
-                  id: value.selectedCategory?.id || "",
-                  category: "Unknown",
-                  type: "",
-                  date: "",
-                },
-          };
-        });
-
-      const all = [
-        ...mapEntries(expenses, "expenses"),
-        ...mapEntries(incomes, "incomes"),
-      ].reverse();
-
-      setTransactionList(all);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching transactions", error);
-      setLoading(false);
-    }
-  };
+  const { transactionList, loading, refetchTransactions } =
+    useTransactions(categoriesList);
 
   useEffect(() => {
     if (deletingRow) {
@@ -102,7 +33,6 @@ function TransactionList() {
   const handleDelete = async (row: IncomeExpenseType) => {
     try {
       await deleteFromFirebase(`${row.type}/${row.id}`);
-      setTransactionList((prev) => prev.filter((item) => item.id !== row.id));
     } catch (err) {
       console.error("Delete error", err);
     } finally {
@@ -127,7 +57,6 @@ function TransactionList() {
       });
 
       setEditingRow(null);
-      await fetchData();
     } catch (err) {
       console.error("Edit error", err);
     }
@@ -148,15 +77,13 @@ function TransactionList() {
       });
 
       setModalOpen(false);
-      await fetchData();
+      await refetchTransactions();
     } catch (err) {
       console.error("Add error", err);
     }
   };
 
-  if (loading) {
-    return <Loader />;
-  }
+  if (loading || loadingCategories) return <Loader />;
 
   return (
     <>

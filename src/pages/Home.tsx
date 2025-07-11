@@ -1,107 +1,24 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { postToFirebase } from "../api/firebaseAPI";
 import Table from "../components/shared/table/Table";
-import { getFromFirebase, postToFirebase } from "../api/firebaseAPI";
 import PieChartCard from "../components/sections/charts/PieChartCard";
 import NoData from "../components/shared/NoData";
 import Loader from "../components/shared/Loader";
-import type { IncomeExpenseType } from "../types";
 import ModalForm from "../components/shared/ModalForm";
+import { useCategories } from "../hooks/useCategories";
+import { useTransactions } from "../hooks/useTransactions";
 
 function Home() {
-  const [transactionList, setTransactionList] = useState<IncomeExpenseType[]>(
-    []
-  );
-  const [incomeTotal, setIncomeTotal] = useState(0);
-  const [expenseTotal, setExpenseTotal] = useState(0);
-  const [loading, setLoading] = useState(true);
   const [isModalOpen, setModalOpen] = useState(false);
+  const { categoriesList, loadingCategories } = useCategories();
+  const {
+    transactionList,
+    incomeTotal,
+    expenseTotal,
+    loading,
+    refetchTransactions,
+  } = useTransactions(categoriesList);
 
-  const [categoriesList, setCategoriesList] = useState<any[]>([]);
-
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  useEffect(() => {
-    fetchData();
-  }, [categoriesList]);
-
-  const fetchCategories = async () => {
-    try {
-      const data = await getFromFirebase("categories");
-      const categories = Object.entries(data || {}).map(
-        ([key, value]: any) => ({
-          id: key,
-          type: value.type,
-          category: value.category,
-          date: value.date,
-        })
-      );
-      setCategoriesList(categories);
-    } catch (error) {
-      console.error("Error fetching categories", error);
-    }
-  };
-
-  const fetchData = async () => {
-    try {
-      const data = await getFromFirebase("");
-      const expenses = data.expenses || {};
-      const incomes = data.incomes || {};
-
-      console.log(data, "Fetched data from Firebase");
-
-      const resolveCategory = (id: string) => {
-        return categoriesList.find((cat) => cat.id === id);
-      };
-
-      const mapEntries = (entries: any, type: "incomes" | "expenses") =>
-        Object.entries(entries).map(([key, value]: any) => {
-          const cat = resolveCategory(value.selectedCategory?.id);
-          return {
-            id: key,
-            type,
-            date: new Date(value.date).toLocaleDateString(),
-            amount: value.amount,
-            description: value.description,
-            selectedCategory: cat
-              ? { ...cat }
-              : {
-                  id: value.selectedCategory?.id || "",
-                  category: "Unknown",
-                  type: "",
-                  date: "",
-                },
-          };
-        });
-
-      const all = [
-        ...mapEntries(expenses, "expenses"),
-        ...mapEntries(incomes, "incomes"),
-      ].reverse();
-
-      // const totalIncome = incomeEntries.reduce(
-      //   (sum, item) => sum + item.amount,
-      //   0
-      // );
-      // const totalExpense = expenseEntries.reduce(
-      //   (sum, item) => sum + item.amount,
-      //   0
-      // );
-      // setIncomeTotal(totalIncome);
-      // setExpenseTotal(totalExpense);
-
-      setTransactionList(all);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching transactions", error);
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
   const handleAdd = async (data: any) => {
     try {
       const category = categoriesList.find(
@@ -111,20 +28,19 @@ function Home() {
 
       await postToFirebase(`${category.type}/`, {
         description: data.description,
-        amount: data.amount,
+        amount: Number(data.amount),
         selectedCategory: category,
         date: Date.now(),
       });
 
       setModalOpen(false);
-      await fetchData();
+      await refetchTransactions();
     } catch (err) {
       console.error("Add error", err);
     }
   };
-  if (loading) {
-    return <Loader />;
-  }
+
+  if (loading || loadingCategories) return <Loader />;
 
   return (
     <>
