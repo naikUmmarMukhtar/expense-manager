@@ -81,3 +81,8 @@ export type CategoryState = {
   type: string;
   date?: Date | undefined;
 };
+
+export interface SearchFiltersProps {
+  onSearchByKeyword: (keyword: string) => void;
+  onSearchByDate: (startDate: string, endDate: string) => void;
+}

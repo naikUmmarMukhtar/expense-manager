@@ -7,6 +7,7 @@ import Loader from "../components/shared/Loader";
 import ModalForm from "../components/shared/ModalForm";
 import { useCategories } from "../hooks/useCategories";
 import { useTransactions } from "../hooks/useTransactions";
+import SearchFilters from "../components/shared/SearchFilters";
 
 function Home() {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -47,6 +48,7 @@ function Home() {
       {transactionList.length > 0 ? (
         <main className="flex-1 bg-white min-h-screen p-6 md:p-10 overflow-y-auto">
           <section className="mb-10">
+            <SearchFilters />
             <div className="rounded-lg border border-gray-200 p-6 shadow-sm">
               <div className="mb-8">
                 <h1 className="text-2xl font-bold text-gray-800">
