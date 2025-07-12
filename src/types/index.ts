@@ -52,6 +52,11 @@ export type IncomeExpenseType = {
   description: string;
   amount: number;
   type: string;
+  selectedCategory: {
+    id: string;
+    category: string;
+    type: string;
+  };
 };
 export interface DateCellProps {
   date: string | Date | number;

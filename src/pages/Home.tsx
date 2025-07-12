@@ -9,10 +9,13 @@ import SearchFilters from "../components/shared/SearchFilters";
 import { useCategories } from "../hooks/useCategories";
 import { useTransactions } from "../hooks/useTransactions";
 import dayjs from "dayjs";
+import type { IncomeExpenseType } from "../types";
 
 function Home() {
   const [isModalOpen, setModalOpen] = useState(false);
-  const [filteredTransactions, setFilteredTransactions] = useState([]);
+  const [filteredTransactions, setFilteredTransactions] = useState<
+    IncomeExpenseType[]
+  >([]);
   const [hasSearched, setHasSearched] = useState(false);
 
   const { categoriesList, loadingCategories } = useCategories();
