@@ -5,7 +5,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   onSearchByKeyword,
   onSearchByDate,
 }) => {
-  const [keyword, setKeyword] = useState("");
+  // const [keyword, setKeyword] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
@@ -24,16 +24,16 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
             <input
               type="text"
               placeholder="e.g. Rent, Salary, Groceries"
-              value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
+              // value={keyword}
+              onChange={(e) => onSearchByKeyword(e.target.value)}
               className="flex-1 border border-gray-300 bg-gray-50 text-sm rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-200"
             />
-            <button
+            {/* <button
               onClick={() => onSearchByKeyword(keyword)}
               className="px-4 py-2 text-sm rounded bg-emerald-500 text-white hover:bg-emerald-600 transition"
             >
               Search
-            </button>
+            </button> */}
           </div>
         </div>
 

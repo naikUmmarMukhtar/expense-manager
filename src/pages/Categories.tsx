@@ -1,48 +1,23 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import {
   deleteFromFirebase,
-  getFromFirebase,
   postToFirebase,
   putToFirebase,
 } from "../api/firebaseAPI";
 import NoData from "../components/shared/NoData";
-import type { CategoryProps, IncomeExpenseType } from "../types";
 import Loader from "../components/shared/Loader";
 import CategoryModal from "../components/shared/CategoryModal";
 import CategoriesTable from "../components/shared/categories-table/CategoriesTable";
 import { clearDeletedCategoryFromTransactions } from "../components/helpers/clearDeletedCategoryFromTransactions";
+import { useCategories } from "../hooks/useCategories";
+import type { CategoryProps, IncomeExpenseType } from "../types";
 
 function TransactionList() {
-  const [categoriesList, setCategoriesList] = useState<CategoryProps[]>([]);
+  const { categoriesList, loadingCategories, refetchCategories } =
+    useCategories();
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [editingRow, setEditingRow] = useState<IncomeExpenseType | null>(null);
-  const [deletingRow, setDeletingRow] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const data = await getFromFirebase("categories");
-
-      const categories = Object.entries(data || {}).map(
-        ([key, value]: any) => ({
-          id: key,
-          type: value.type,
-          category: value.category,
-          date: value.date,
-        })
-      );
-
-      setCategoriesList(categories);
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-    }
-  };
+  const [deletingRow, setDeletingRow] = useState<CategoryProps | null>(null);
 
   useEffect(() => {
     if (deletingRow) {
@@ -54,9 +29,7 @@ function TransactionList() {
     try {
       await deleteFromFirebase(`categories/${row.id}`);
       await clearDeletedCategoryFromTransactions(row.id);
-
-      const updatedList = categoriesList.filter((item) => item.id !== row.id);
-      setCategoriesList(updatedList);
+      await refetchCategories();
       setDeletingRow(null);
     } catch (err) {
       console.error("Error deleting category:", err);
@@ -72,7 +45,7 @@ function TransactionList() {
         date: Date.now(),
       });
       setEditingRow(null);
-      await fetchData();
+      await refetchCategories();
     } catch (err) {
       console.error("Error updating category:", err);
     }
@@ -86,13 +59,13 @@ function TransactionList() {
         date: Date.now(),
       });
       setShowCategoryModal(false);
-      fetchData();
+      await refetchCategories();
     } catch (err) {
       console.error("Error adding category:", err);
     }
   };
 
-  if (loading) {
+  if (loadingCategories) {
     return <Loader />;
   }
 
@@ -104,9 +77,9 @@ function TransactionList() {
             showIncomeAction={true}
             showExpenseAction={true}
             onAddTransaction={() => setShowCategoryModal(true)}
-            title="No Transactions Yet"
+            title="No Categories Yet"
             buttonLabel="Add Category"
-            description="You haven’t added any income or expenses. Visit the Income or Expense section to create a transaction."
+            description="You haven’t added any income or expense categories yet. Create one to get started."
           />
         </div>
       ) : (
