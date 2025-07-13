@@ -56,11 +56,15 @@ function Home() {
     setHasSearched(true);
   };
   const handleSearchByDate = (start: string, end: string) => {
-    const startDate = dayjs(start).valueOf(); // convert to timestamp
+    console.log(start, end);
+
+    const startDate = dayjs(start).valueOf();
     const endDate = dayjs(end).valueOf();
 
+    // console.log(startDate, endDate);
+
     const filtered = transactionList.filter((t) => {
-      const transactionDate = Number(t.date); // ensure number
+      const transactionDate = Number(t.date);
       return transactionDate >= startDate && transactionDate <= endDate;
     });
 
@@ -101,6 +105,10 @@ function Home() {
           <SearchFilters
             onSearchByKeyword={handleSearchByKeyword}
             onSearchByDate={handleSearchByDate}
+            resetDate={() => {
+              setFilteredTransactions(transactionList);
+              setHasSearched(false);
+            }}
           />
         </div>
 

@@ -4,6 +4,7 @@ import type { SearchFiltersProps } from "../../types";
 const SearchFilters: React.FC<SearchFiltersProps> = ({
   onSearchByKeyword,
   onSearchByDate,
+  resetDate,
 }) => {
   // const [keyword, setKeyword] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -59,6 +60,17 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
               className="px-4 py-2 text-sm rounded bg-emerald-500 text-white hover:bg-emerald-600 transition"
             >
               Filter
+            </button>
+
+            <button
+              onClick={() => {
+                setStartDate("");
+                setEndDate("");
+                resetDate();
+              }}
+              className="px-4 py-2 text-sm rounded bg-gray-300 text-gray-700 hover:bg-gray-400 transition"
+            >
+              Reset
             </button>
           </div>
         </div>

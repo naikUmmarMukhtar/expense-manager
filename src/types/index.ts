@@ -90,4 +90,5 @@ export type CategoryState = {
 export interface SearchFiltersProps {
   onSearchByKeyword: (keyword: string) => void;
   onSearchByDate: (startDate: string, endDate: string) => void;
+  resetDate: () => void;
 }

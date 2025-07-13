@@ -19,6 +19,8 @@ function TransactionList() {
   const [editingRow, setEditingRow] = useState<IncomeExpenseType | null>(null);
   const [deletingRow, setDeletingRow] = useState<CategoryProps | null>(null);
 
+  console.log(categoriesList, "categoriesList");
+
   useEffect(() => {
     if (deletingRow) {
       handleDelete(deletingRow);
