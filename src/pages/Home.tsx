@@ -10,6 +10,7 @@ import { useCategories } from "../hooks/useCategories";
 import { useTransactions } from "../hooks/useTransactions";
 import dayjs from "dayjs";
 import type { IncomeExpenseType } from "../types";
+import LineChartCard from "../components/sections/charts/LineChartCard";
 
 function Home() {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -115,19 +116,38 @@ function Home() {
         {filteredTransactions.length ? (
           <>
             <section className="mb-10">
-              <div className="rounded-lg border p-6 shadow-sm">
-                <h1 className="text-2xl font-bold text-gray-800 mb-1">
-                  Financial Overview
-                </h1>
-                <p className="text-sm text-gray-500 mb-8">Income vs Expense</p>
-                <PieChartCard
-                  income={filteredTransactions
-                    .filter((t) => t.selectedCategory?.type === "incomes")
-                    .reduce((sum, t) => sum + Number(t.amount), 0)}
-                  expense={filteredTransactions
-                    .filter((t) => t.selectedCategory?.type === "expenses")
-                    .reduce((sum, t) => sum + Number(t.amount), 0)}
-                />
+              <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-md">
+                <div className="mb-6">
+                  <h1 className="text-3xl font-semibold text-gray-900">
+                    Financial Overview
+                  </h1>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Track your income and expenses visually
+                  </p>
+                </div>
+
+                <div className="flex flex-col md:flex-row gap-6">
+                  <div className="md:w-[50%] w-full bg-white border border-gray-100 rounded-xl shadow-sm p-4">
+                    <h2 className="text-lg font-medium text-gray-800 mb-3">
+                      Expense Breakdown
+                    </h2>
+                    <PieChartCard
+                      income={filteredTransactions
+                        .filter((t) => t.selectedCategory?.type === "incomes")
+                        .reduce((sum, t) => sum + Number(t.amount), 0)}
+                      expense={filteredTransactions
+                        .filter((t) => t.selectedCategory?.type === "expenses")
+                        .reduce((sum, t) => sum + Number(t.amount), 0)}
+                    />
+                  </div>
+
+                  <div className="md:w-[50%] w-full bg-white border border-gray-100 rounded-xl shadow-sm p-4">
+                    <h2 className="text-lg font-medium text-gray-800 mb-3">
+                      Income vs Expense Over Time
+                    </h2>
+                    <LineChartCard data={filteredTransactions} />
+                  </div>
+                </div>
               </div>
             </section>
 

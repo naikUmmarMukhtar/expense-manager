@@ -1,6 +1,7 @@
 import { Plus } from "lucide-react";
 import type { TableProps } from "../../../types";
 import TableRow from "./TableRow";
+import { formatCurrency } from "../../../utils/formatCurrency";
 
 const Table: React.FC<TableProps> = ({
   data,
@@ -17,13 +18,9 @@ const Table: React.FC<TableProps> = ({
   const netBalance = (incomeTotal ?? 0) - (expenseTotal ?? 0);
   const totalTransactions = data?.length || 0;
   const totalTransactionAmount = (incomeTotal ?? 0) + (expenseTotal ?? 0);
-  console.log(data, "data in Table");
 
   return (
-    <div
-      className="overflow-x-auto 
-    rounded-lg bg-white p-6"
-    >
+    <div className="overflow-x-auto rounded-lg bg-white p-6">
       {showActionButton && actionButtonLabel && (
         <div className="flex justify-end mb-4">
           <button
@@ -41,13 +38,13 @@ const Table: React.FC<TableProps> = ({
           <div className="bg-green-50 p-4 rounded shadow-sm">
             <p className="font-semibold">Total Income</p>
             <p className="text-green-700 font-medium">
-              ₹{(incomeTotal ?? 0).toFixed(2)}
+              {formatCurrency(incomeTotal ?? 0)}
             </p>
           </div>
           <div className="bg-red-50 p-4 rounded shadow-sm">
             <p className="font-semibold">Total Expense</p>
             <p className="text-red-700 font-medium">
-              ₹{(expenseTotal ?? 0).toFixed(2)}
+              {formatCurrency(expenseTotal ?? 0)}
             </p>
           </div>
           <div className="bg-yellow-50 p-4 rounded shadow-sm">
@@ -62,7 +59,7 @@ const Table: React.FC<TableProps> = ({
             }`}
           >
             <p className="font-semibold">Net Balance</p>
-            <p className="font-medium">₹{netBalance.toFixed(2)}</p>
+            <p className="font-medium">{formatCurrency(netBalance)}</p>
           </div>
         </div>
       )}
@@ -78,7 +75,7 @@ const Table: React.FC<TableProps> = ({
                 Amount
                 {showTotal && (
                   <span className="ml-1 text-xs text-gray-500 font-normal">
-                    (₹{totalTransactionAmount.toFixed(2)})
+                    ({formatCurrency(totalTransactionAmount)})
                   </span>
                 )}
               </th>
