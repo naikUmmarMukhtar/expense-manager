@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
-import type { CategoryModalProps, CategoryState } from "../../types";
-
+import type { CategoryModalProps } from "../../types";
+type CategoryState = {
+  category: string;
+  type: string;
+  date?: Date;
+};
 function CategoryModal({
   isOpen,
   onClose,
@@ -35,7 +39,7 @@ function CategoryModal({
       onSave({
         ...initialData,
         ...category,
-        date: new Date(),
+        // date: new Date(),
       });
       setCategory({ category: "", type: "" });
     }
@@ -70,7 +74,7 @@ function CategoryModal({
               onChange={handleChange}
               name="type"
               required
-              disabled={initialData}
+              disabled={!!initialData}
             >
               <option disabled value="">
                 Select type

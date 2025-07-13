@@ -84,7 +84,7 @@ export interface CategoryModalProps {
 export type CategoryState = {
   category: string;
   type: string;
-  date?: Date | undefined;
+  date?: Date;
 };
 
 export interface SearchFiltersProps {
