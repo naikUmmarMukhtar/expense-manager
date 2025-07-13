@@ -1,6 +1,7 @@
 import { Pencil, Trash2 } from "lucide-react";
 import type { TableRowProps } from "../../../types";
 import DateCell from "../DateCell";
+import { formatCurrency } from "../../../utils/formatCurrency";
 
 const TableRow: React.FC<TableRowProps> = ({
   row,
@@ -29,7 +30,7 @@ const TableRow: React.FC<TableRowProps> = ({
       </td>
 
       <td className="px-4 py-3 border border-gray-200 font-medium text-right text-gray-700">
-        ₹{row.amount}
+        {formatCurrency(row.amount)}
       </td>
       {showActions && (
         <td className="px-4 py-3 border border-gray-200 text-right whitespace-nowrap">
