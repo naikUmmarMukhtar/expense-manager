@@ -52,7 +52,7 @@ export type IncomeExpenseType = {
   description: string;
   amount: number;
   type: string;
-  selectedCategory: {
+  selectedCategory?: {
     id: string;
     category: string;
     type: string;
