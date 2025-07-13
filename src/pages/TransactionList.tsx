@@ -3,7 +3,6 @@ import Table from "../components/shared/table/Table";
 import ModalForm from "../components/shared/ModalForm";
 import {
   deleteFromFirebase,
-  getFromFirebase,
   postToFirebase,
   putToFirebase,
 } from "../api/firebaseAPI";

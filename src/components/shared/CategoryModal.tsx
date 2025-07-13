@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react";
-import type { CategoryModalProps } from "../../types";
-type CategoryState = {
-  category: string;
-  type: string;
-  date?: Date;
-};
+import type { CategoryModalProps, CategoryState } from "../../types";
+
 function CategoryModal({
   isOpen,
   onClose,
