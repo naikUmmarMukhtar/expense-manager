@@ -60,7 +60,7 @@ function Home() {
     console.log(start, end);
 
     const startDate = dayjs(start).valueOf();
-    const endDate = dayjs(end).valueOf();
+    const endDate = dayjs(end).endOf("day").valueOf();
 
     // console.log(startDate, endDate);
 
