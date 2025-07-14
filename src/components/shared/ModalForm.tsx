@@ -123,7 +123,7 @@ const ModalForm: React.FC<ModalFormProps> = ({
             </button>
             <button
               type="submit"
-              className="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700 transition"
+              className="px-4 py-2 rounded-md bg-rose-600 text-white text-sm hover:bg-rose-700 transition"
             >
               {initialData ? "Update" : `Add`}
             </button>

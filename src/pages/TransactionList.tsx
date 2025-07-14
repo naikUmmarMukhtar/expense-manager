@@ -32,6 +32,7 @@ function TransactionList() {
   const handleDelete = async (row: IncomeExpenseType) => {
     try {
       await deleteFromFirebase(`${row.type}/${row.id}`);
+      refetchTransactions();
     } catch (err) {
       console.error("Delete error", err);
     } finally {
