@@ -57,6 +57,7 @@ function TransactionList() {
       });
 
       setEditingRow(null);
+      await refetchTransactions();
     } catch (err) {
       console.error("Edit error", err);
     }

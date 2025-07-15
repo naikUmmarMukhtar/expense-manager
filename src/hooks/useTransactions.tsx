@@ -1,69 +1,77 @@
-import { useEffect, useState, useCallback } from "react";
+import { useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { getFromFirebase } from "../api/firebaseAPI";
 import type { IncomeExpenseType } from "../types";
 
 export const useTransactions = (categoriesList: any[]) => {
-  const [transactionList, setTransactionList] = useState<IncomeExpenseType[]>(
-    []
-  );
-  const [incomeTotal, setIncomeTotal] = useState(0);
-  const [expenseTotal, setExpenseTotal] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const { data, isLoading, isError, refetch } = useQuery({
+    queryKey: ["transactions"],
+    queryFn: () => getFromFirebase(""),
+    enabled: categoriesList.length > 0,
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchInterval: false,
+  });
 
-  const fetchTransactions = useCallback(async () => {
-    // if (!categoriesList || categoriesList.length === 0) {
-    //   setLoading(false);
-    //   return;
-    // }
+  const { transactionList, incomeTotal, expenseTotal } = useMemo(() => {
+    if (!data || categoriesList.length === 0) {
+      return {
+        transactionList: [],
+        incomeTotal: 0,
+        expenseTotal: 0,
+      };
+    }
 
-    setLoading(true);
-    try {
-      const data = await getFromFirebase("");
-      const expenses = data.expenses || {};
-      const incomes = data.incomes || {};
+    const resolveCategory = (id: string) =>
+      categoriesList.find((cat) => cat.id === id) || "";
 
-      const resolveCategory = (id: string) =>
-        categoriesList.find((cat) => cat.id === id) || "";
+    const expenses = data.expenses || {};
+    const incomes = data.incomes || {};
 
-      const expenseList = Object.entries(expenses).map(([key, value]: any) => ({
+    const expenseList: IncomeExpenseType[] = Object.entries(expenses).map(
+      ([key, value]: any) => ({
         id: key,
         type: "expenses",
         description: value.description,
         amount: Number(value.amount),
         date: value.date,
         selectedCategory: resolveCategory(value.selectedCategory?.id),
-      }));
+      })
+    );
 
-      const incomeList = Object.entries(incomes).map(([key, value]: any) => ({
+    const incomeList: IncomeExpenseType[] = Object.entries(incomes).map(
+      ([key, value]: any) => ({
         id: key,
         type: "incomes",
         description: value.description,
         amount: Number(value.amount),
         date: value.date,
         selectedCategory: resolveCategory(value.selectedCategory?.id),
-      }));
+      })
+    );
 
-      const allTransactions = [...expenseList, ...incomeList].reverse();
+    const allTransactions = [...expenseList, ...incomeList].reverse();
 
-      setTransactionList(allTransactions);
-      setIncomeTotal(incomeList.reduce((sum, item) => sum + item.amount, 0));
-      setExpenseTotal(expenseList.reduce((sum, item) => sum + item.amount, 0));
-    } catch (error) {
-      console.error("Error fetching transactions", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [categoriesList]);
+    const incomeTotal = incomeList.reduce((sum, item) => sum + item.amount, 0);
+    const expenseTotal = expenseList.reduce(
+      (sum, item) => sum + item.amount,
+      0
+    );
 
-  useEffect(() => {
-    fetchTransactions();
-  }, [fetchTransactions]);
+    return {
+      transactionList: allTransactions,
+      incomeTotal,
+      expenseTotal,
+    };
+  }, [data, categoriesList]);
 
   return {
     transactionList,
     incomeTotal,
     expenseTotal,
-    loading,
-    refetchTransactions: fetchTransactions,
+    loading: isLoading,
+    error: isError,
+    refetchTransactions: refetch,
   };
 };
