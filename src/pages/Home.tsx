@@ -62,8 +62,6 @@ function Home() {
     const startDate = dayjs(start).valueOf();
     const endDate = dayjs(end).endOf("day").valueOf();
 
-    // console.log(startDate, endDate);
-
     const filtered = transactionList.filter((t) => {
       const transactionDate = Number(t.date);
       return transactionDate >= startDate && transactionDate <= endDate;

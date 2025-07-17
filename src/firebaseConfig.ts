@@ -1,9 +1,10 @@
-// import { initializeApp } from "firebase/app";
-// import { getDatabase } from "firebase/database";
-// import { FIREBASE_CONFIG } from "./lib/constants";
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { FIREBASE_CONFIG } from "./lib/constants";
 
-// const app = initializeApp(FIREBASE_CONFIG);
+const app = initializeApp(FIREBASE_CONFIG);
+console.log(FIREBASE_CONFIG, "FIREBASE_CONFIG");
 
-// const db = getDatabase(app);
+const auth = getAuth(app);
 
-// export { db };
+export { auth };

@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { ArrowLeftRight, Home, LayoutGrid } from "lucide-react";
+import { ArrowLeftRight, Home, LayoutGrid, Settings } from "lucide-react";
 import { getLinkClasses } from "../../utils/getLinkClasses";
 
 const Sidebar = () => {
@@ -49,6 +49,14 @@ const Sidebar = () => {
         >
           <LayoutGrid size={18} />
           <span>Categories</span>
+        </NavLink>
+
+        <NavLink
+          to="/settings"
+          className={({ isActive }) => getLinkClasses({ isActive })}
+        >
+          <Settings size={18} />
+          <span>Settings</span>
         </NavLink>
       </nav>
     </aside>

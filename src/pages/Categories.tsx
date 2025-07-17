@@ -10,11 +10,14 @@ import CategoryModal from "../components/shared/CategoryModal";
 import CategoriesTable from "../components/shared/categories-table/CategoriesTable";
 import { clearDeletedCategoryFromTransactions } from "../components/helpers/clearDeletedCategoryFromTransactions";
 import { useCategories } from "../hooks/useCategories";
+
 import type { CategoryProps, IncomeExpenseType } from "../types";
+import { auth } from "../firebaseConfig";
 
 function TransactionList() {
   const { categoriesList, loadingCategories, refetchCategories } =
     useCategories();
+
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [editingRow, setEditingRow] = useState<IncomeExpenseType | null>(null);
   const [deletingRow, setDeletingRow] = useState<CategoryProps | null>(null);
@@ -29,8 +32,11 @@ function TransactionList() {
 
   const handleDelete = async (row: CategoryProps) => {
     try {
-      await deleteFromFirebase(`categories/${row.id}`);
-      await clearDeletedCategoryFromTransactions(row.id);
+      const uid = auth.currentUser?.uid;
+      if (!uid) throw new Error("User not authenticated");
+
+      await deleteFromFirebase(`${uid}/categories/${row.id}`);
+      // await clearDeletedCategoryFromTransactions(row.id);
       await refetchCategories();
       setDeletingRow(null);
     } catch (err) {
@@ -40,12 +46,16 @@ function TransactionList() {
 
   const handleEdit = async (updatedData: any) => {
     try {
+      const uid = auth.currentUser?.uid;
+      if (!uid) throw new Error("User not authenticated");
+
       const { id, category, type } = updatedData;
-      await putToFirebase(`categories/${id}`, {
+      await putToFirebase(`${uid}/categories/${id}`, {
         category,
         type,
         date: Date.now(),
       });
+
       setEditingRow(null);
       await refetchCategories();
     } catch (err) {
@@ -55,11 +65,15 @@ function TransactionList() {
 
   const handleAdd = async (data: any) => {
     try {
-      await postToFirebase(`categories/`, {
+      const uid = auth.currentUser?.uid;
+      if (!uid) throw new Error("User not authenticated");
+
+      await postToFirebase(`${uid}/categories/`, {
         category: data.category,
         type: data.type,
         date: Date.now(),
       });
+
       setShowCategoryModal(false);
       await refetchCategories();
     } catch (err) {
@@ -67,9 +81,7 @@ function TransactionList() {
     }
   };
 
-  if (loadingCategories) {
-    return <Loader />;
-  }
+  if (loadingCategories) return <Loader />;
 
   return (
     <>

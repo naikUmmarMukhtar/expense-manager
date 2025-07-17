@@ -2,32 +2,31 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getFromFirebase } from "../api/firebaseAPI";
 import type { IncomeExpenseType } from "../types";
+import { auth } from "../firebaseConfig";
 
 export const useTransactions = (categoriesList: any[]) => {
+  const uid = auth.currentUser?.uid;
+
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ["transactions"],
-    queryFn: () => getFromFirebase(""),
-    enabled: categoriesList.length > 0,
+    queryKey: ["transactions", uid],
+    queryFn: () => {
+      if (!uid) throw new Error("User not authenticated");
+      return getFromFirebase(`${uid}/transactions`);
+    },
+    enabled: !!uid,
     staleTime: Infinity,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    refetchInterval: false,
   });
 
-  const { transactionList, incomeTotal, expenseTotal } = useMemo(() => {
-    if (!data || categoriesList.length === 0) {
-      return {
-        transactionList: [],
-        incomeTotal: 0,
-        expenseTotal: 0,
-      };
-    }
+  console.log(data, "useTransactions data");
 
+  const { transactionList, incomeTotal, expenseTotal } = useMemo(() => {
     const resolveCategory = (id: string) =>
       categoriesList.find((cat) => cat.id === id) || "";
 
-    const expenses = data.expenses || {};
-    const incomes = data.incomes || {};
+    const expenses = data?.expenses || {};
+    const incomes = data?.incomes || {};
 
     const expenseList: IncomeExpenseType[] = Object.entries(expenses).map(
       ([key, value]: any) => ({

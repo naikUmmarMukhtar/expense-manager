@@ -11,6 +11,7 @@ import Loader from "../components/shared/Loader";
 import type { IncomeExpenseType } from "../types";
 import { useCategories } from "../hooks/useCategories";
 import { useTransactions } from "../hooks/useTransactions";
+import { auth } from "../firebaseConfig";
 
 function TransactionList() {
   const [editingRow, setEditingRow] = useState<IncomeExpenseType | null>(null);
@@ -22,6 +23,7 @@ function TransactionList() {
 
   const { transactionList, loading, refetchTransactions } =
     useTransactions(categoriesList);
+  console.log(transactionList, "transactionList");
 
   useEffect(() => {
     if (deletingRow) {
@@ -30,8 +32,10 @@ function TransactionList() {
   }, [deletingRow]);
 
   const handleDelete = async (row: IncomeExpenseType) => {
+    const uid = auth.currentUser?.uid;
+    if (!uid) throw new Error("User not authenticated");
     try {
-      await deleteFromFirebase(`${row.type}/${row.id}`);
+      await deleteFromFirebase(`${uid}/transactions/${row.type}/${row.id}`);
       refetchTransactions();
     } catch (err) {
       console.error("Delete error", err);
@@ -69,8 +73,10 @@ function TransactionList() {
         (cat) => cat.id === data.selectedCategory.id
       );
       if (!category) throw new Error("Category not found");
+      const uid = auth.currentUser?.uid;
+      if (!uid) throw new Error("User not authenticated");
 
-      await postToFirebase(`${category.type}/`, {
+      await postToFirebase(`${uid}/transactions/${category.type}/`, {
         description: data.description,
         amount: data.amount,
         selectedCategory: category,
