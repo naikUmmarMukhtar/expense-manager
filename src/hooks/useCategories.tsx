@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { getFromFirebase } from "../api/firebaseAPI";
-import { auth } from "../firebaseConfig"; // make sure you import auth
+import { auth } from "../firebaseConfig";
 
 export const useCategories = () => {
   const uid = auth.currentUser?.uid;
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["categories", uid],
-    enabled: !!uid, // prevents the query from running if uid is not available
+    enabled: !!uid,
     queryFn: async () => {
       const data = await getFromFirebase(`${uid}/categories`);
       return Object.entries(data || {}).map(([key, value]: any) => ({

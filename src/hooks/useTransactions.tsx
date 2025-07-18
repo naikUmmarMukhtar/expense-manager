@@ -19,8 +19,6 @@ export const useTransactions = (categoriesList: any[]) => {
     refetchOnReconnect: false,
   });
 
-  console.log(data, "useTransactions data");
-
   const { transactionList, incomeTotal, expenseTotal } = useMemo(() => {
     const resolveCategory = (id: string) =>
       categoriesList.find((cat) => cat.id === id) || "";

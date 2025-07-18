@@ -8,7 +8,6 @@ import NoData from "../components/shared/NoData";
 import Loader from "../components/shared/Loader";
 import CategoryModal from "../components/shared/CategoryModal";
 import CategoriesTable from "../components/shared/categories-table/CategoriesTable";
-import { clearDeletedCategoryFromTransactions } from "../components/helpers/clearDeletedCategoryFromTransactions";
 import { useCategories } from "../hooks/useCategories";
 
 import type { CategoryProps, IncomeExpenseType } from "../types";
