@@ -35,8 +35,8 @@ export default function LoginForm({
         required
       />
 
-      {error && <div className="text-red-600 text-sm">⚠️ {error}</div>}
-      {message && <div className="text-green-600 text-sm">✅ {message}</div>}
+      {error && <div className="text-red-700 text-sm">{error}</div>}
+      {message && <div className="text-green-700 text-sm">{message}</div>}
 
       <button
         disabled={loading}

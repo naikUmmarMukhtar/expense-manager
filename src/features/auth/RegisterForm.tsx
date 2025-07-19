@@ -44,14 +44,14 @@ export default function RegisterForm({
         required
       />
 
-      {error && <div className="text-red-600 text-sm">⚠️ {error}</div>}
-      {message && <div className="text-green-600 text-sm">✅ {message}</div>}
+      {error && <div className="text-red-700 text-sm">{error}</div>}
+      {message && <div className="text-green-700 text-sm">{message}</div>}
 
       <button
         disabled={loading}
         className="bg-pink-500 text-white rounded-full px-8 py-3 text-sm font-bold uppercase mt-2"
       >
-        {loading ? "Creating..." : "Sign Up"}
+        {loading ? "Signing Up..." : "Sign Up"}
       </button>
     </form>
   );

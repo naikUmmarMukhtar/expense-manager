@@ -102,9 +102,9 @@ export default function AuthForm() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-[#f6f5f7] font-[Montserrat]">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-[#f6f5f7] ">
       <div
-        className={`relative w-full max-w-[768px] min-h-[480px] bg-white rounded-[10px] shadow-lg overflow-hidden`}
+        className={`relative w-full max-w-[920px] min-h-[480px] bg-white rounded-[10px] shadow-lg overflow-hidden`}
       >
         <div
           className={`absolute top-0 h-full w-1/2 transition-all duration-500 ${

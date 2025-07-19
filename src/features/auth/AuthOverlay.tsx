@@ -38,7 +38,7 @@ export default function AuthOverLay({
         <div className="absolute top-0 right-0 w-1/2 h-full flex flex-col items-center justify-center px-10 text-center">
           <h1 className="text-3xl font-bold">Get Started</h1>
           <p className="text-sm mt-2 mb-4">
-            Join and take control of your money.
+            Join Counting House and take control of your money.
           </p>
           <button
             onClick={() => {
