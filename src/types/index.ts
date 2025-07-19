@@ -92,3 +92,22 @@ export interface SearchFiltersProps {
   onSearchByDate: (startDate: string, endDate: string) => void;
   resetDate: () => void;
 }
+export type AuthOverLayProps = {
+  isLogin: boolean;
+  setIsLogin: (val: boolean) => void;
+  clearFields: () => void;
+  setError: (val: string) => void;
+  setMessage: (val: string) => void;
+};
+export type LoginSignUpFormProps = {
+  formData: {
+    email: string;
+    password: string;
+    confirmPassword?: string;
+  };
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  loading: boolean;
+  error?: string;
+  message?: string;
+};
