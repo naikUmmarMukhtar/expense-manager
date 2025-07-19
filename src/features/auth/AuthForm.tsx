@@ -82,7 +82,7 @@ export default function AuthForm() {
         });
 
         await sendEmailVerification(user, {
-          url: "https://finlogger.netlify.app/",
+          url: "https://countinghouse.netlify.app/",
         });
 
         await signOut(auth);
@@ -103,7 +103,9 @@ export default function AuthForm() {
     <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
       <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg border">
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
-          {isLogin ? "Login to FinLogger" : "Create a FinLogger Account"}
+          {isLogin
+            ? "Login to Counting House"
+            : "Create a Counting House Account"}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
