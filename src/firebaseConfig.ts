@@ -3,7 +3,6 @@ import { getAuth } from "firebase/auth";
 import { FIREBASE_CONFIG } from "./lib/constants";
 
 const app = initializeApp(FIREBASE_CONFIG);
-console.log(FIREBASE_CONFIG, "FIREBASE_CONFIG");
 
 const auth = getAuth(app);
 

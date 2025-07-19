@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getFromFirebase } from "../api/firebaseAPI";
 import { auth } from "../firebaseConfig";
@@ -22,8 +23,10 @@ export const useCategories = () => {
     refetchOnReconnect: false,
   });
 
+  const categoriesList = useMemo(() => data ?? [], [data]);
+
   return {
-    categoriesList: data ?? [],
+    categoriesList,
     loadingCategories: isLoading,
     error: isError,
     refetchCategories: refetch,
