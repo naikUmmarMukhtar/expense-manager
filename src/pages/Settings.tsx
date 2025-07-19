@@ -1,5 +1,4 @@
-import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../features/auth/authSlice";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   LogOut,
@@ -14,15 +13,17 @@ import {
 import { getAuth, signOut } from "firebase/auth";
 
 export default function Settings() {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user } = useSelector((state: any) => state.auth);
+  const auth = getAuth();
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    setUser(auth.currentUser);
+  }, [auth.currentUser]);
 
   const handleLogout = async () => {
     try {
-      const auth = getAuth();
       await signOut(auth);
-      dispatch(logout());
       navigate("/");
     } catch (error) {
       console.error("Logout failed:", error);
@@ -30,8 +31,8 @@ export default function Settings() {
   };
 
   return (
-    <div className="flex flex-col items-center  min-h-screen px-4">
-      <div className="bg-white w-full  p-6  space-y-6 relative">
+    <div className="flex justify-center bg-white-50 p-6 ">
+      <div className="w-full   space-y-8 relative">
         <button
           onClick={handleLogout}
           className="absolute top-4 right-4 flex items-center gap-1 text-red-600 hover:underline text-sm"
@@ -41,34 +42,35 @@ export default function Settings() {
         </button>
 
         <div>
-          <h1 className="text-2xl font-semibold text-gray-800">Settings</h1>
+          <h1 className="text-3xl font-bold text-gray-800">Settings</h1>
           <p className="text-sm text-gray-500">
-            Manage your account and preferences
+            Manage your profile, preferences, and security.
           </p>
         </div>
 
-        <div className="space-y-2">
+        <section className="space-y-2">
+          <h2 className="text-lg font-medium text-gray-700">User Info</h2>
           <div className="flex items-center gap-2 text-gray-700">
             <User className="w-4 h-4" />
-            <span>{user?.name || "N/A"}</span>
+            <span>{user?.displayName || "N/A"}</span>
           </div>
           <div className="flex items-center gap-2 text-gray-700">
             <Mail className="w-4 h-4" />
             <span>{user?.email || "N/A"}</span>
           </div>
-        </div>
+        </section>
 
-        <div className="space-y-2">
+        <section className="space-y-2">
           <h2 className="text-lg font-medium text-gray-700">Security</h2>
-          <button className="flex items-center gap-2 text-amber-600 hover:underline">
+          <button className="flex items-center gap-2 text-amber-600 hover:underline text-sm">
             <Lock className="w-4 h-4" />
             Change Password
           </button>
-        </div>
+        </section>
 
-        <div className="space-y-2">
+        <section className="space-y-2">
           <h2 className="text-lg font-medium text-gray-700">Notifications</h2>
-          <label className="flex items-center gap-2 text-gray-700">
+          <label className="flex items-center gap-2 text-gray-700 text-sm">
             <input
               type="checkbox"
               className="accent-amber-500"
@@ -77,29 +79,29 @@ export default function Settings() {
             <Bell className="w-4 h-4" />
             Email Alerts
           </label>
-        </div>
+        </section>
 
-        <div className="space-y-2">
+        <section className="space-y-2">
           <h2 className="text-lg font-medium text-gray-700">Appearance</h2>
           <div className="flex gap-4">
-            <button className="flex items-center gap-2 text-gray-700 hover:text-yellow-600">
+            <button className="flex items-center gap-2 text-gray-700 hover:text-yellow-600 text-sm">
               <Sun className="w-4 h-4" />
-              Light
+              Light Mode
             </button>
-            <button className="flex items-center gap-2 text-gray-700 hover:text-yellow-600">
+            <button className="flex items-center gap-2 text-gray-700 hover:text-yellow-600 text-sm">
               <Moon className="w-4 h-4" />
-              Dark
+              Dark Mode
             </button>
           </div>
-        </div>
+        </section>
 
-        <div className="space-y-2 border-t pt-4 border-gray-200">
+        <section className="space-y-2 border-t pt-4 border-gray-200">
           <h2 className="text-lg font-medium text-red-600">Danger Zone</h2>
-          <button className="flex items-center gap-2 text-red-600 hover:underline">
+          <button className="flex items-center gap-2 text-red-600 hover:underline text-sm">
             <Trash2 className="w-4 h-4" />
             Delete Account
           </button>
-        </div>
+        </section>
       </div>
     </div>
   );

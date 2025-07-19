@@ -1,27 +1,34 @@
-// src/App.tsx
+import { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebaseConfig";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useSelector } from "react-redux";
 import Sidebar from "./components/sections/Sidebar";
 import AuthForm from "./features/auth/AuthForm";
-import EmailConfirmationNotice from "./features/auth/EmailConfirmationNotice";
 import Home from "./pages/Home";
 import IncomeList from "./pages/IncomeList";
 import ExpenseList from "./pages/ExpenseList";
 import Transaction from "./pages/TransactionList";
 import Categories from "./pages/Categories";
 import Settings from "./pages/Settings";
+import Loader from "./components/shared/Loader";
 
 function App() {
-  const { isAuthenticated, isEmailVerified } = useSelector(
-    (state: any) => state.auth
-  );
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (!isAuthenticated) {
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  if (loading) return <Loader />;
+
+  if (!user || !user.emailVerified) {
     return <AuthForm />;
-  }
-
-  if (!isEmailVerified) {
-    return <EmailConfirmationNotice />;
   }
 
   return (
