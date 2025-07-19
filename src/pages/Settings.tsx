@@ -42,14 +42,14 @@ export default function Settings() {
         </button>
 
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Settings</h1>
+          <h1 className="text-2xl font-medium text-gray-700">Settings</h1>
           <p className="text-sm text-gray-500">
             Manage your profile, preferences, and security.
           </p>
         </div>
 
         <section className="space-y-2">
-          <h2 className="text-lg font-medium text-gray-700">User Info</h2>
+          <h2 className="text-lg font-medium text-gray-600">User Info</h2>
           <div className="flex items-center gap-2 text-gray-700">
             <User className="w-4 h-4" />
             <span>{user?.displayName || "N/A"}</span>

@@ -7,7 +7,7 @@ const Sidebar = () => {
     <aside className="w-60 min-h-screen bg-gray-50 border-r border-gray-200 p-6">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-800 tracking-tight">
-          Expense Manager
+          Counting House
         </h1>
         <p className="text-sm text-gray-500">Track your finances</p>
       </div>
