@@ -78,7 +78,9 @@ export default function AuthForm() {
         );
         const user = userCredential.user;
         await updateProfile(user, { displayName: email.split("@")[0] });
-        await postToFirebase(`${user.uid}/userDetails`, {
+        const uid = auth.currentUser?.uid;
+        if (!uid) throw new Error("User not authenticated");
+        await postToFirebase(`${uid}/userDetails`, {
           email: user.email,
           displayName: user.displayName,
           createdAt: new Date().toISOString(),
